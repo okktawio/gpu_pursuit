@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import pyopencl as cl
-import numpy as nu
+import numpy as np
 import sys
 
 class gpu_base:
@@ -88,7 +88,6 @@ class gpu_base:
         self.mf = cl.mem_flags
 
     def upload_data(self):
-        #print "uploading data"
         #matrix with data
         self.cl_cube    = cl.Buffer(self.ctx, self.mf.READ_ONLY  | self.mf.COPY_HOST_PTR, hostbuf = self.cube)
         #matrix with time data
@@ -103,7 +102,6 @@ class gpu_base:
         cl.enqueue_copy(self.queue, self.nparams, self.cl_nparams)
         if self.calculate_error_params:
             cl.enqueue_copy(self.queue, self.errparams, self.cl_errparams)
-            #print self.errparams.shape
             return self.params, self.nparams, self.errparams
         return self.params, self.nparams
 
@@ -112,19 +110,18 @@ class gpu_base:
         generates the matrix which contains the standard deviation of calculated parameters.
         """
         if self.calculate_error_params:
-            self.errparams        = nu.zeros_like(self.params)
+            self.errparams        = np.zeros_like(self.params)
         else:
-            self.errparams        = nu.zeros((1, 1, 1), nu.float32)
+            self.errparams        = np.zeros((1, 1, 1), np.float32)
         self.cl_errparams    = cl.Buffer(self.ctx, self.mf.READ_WRITE | self.mf.COPY_HOST_PTR, hostbuf = self.errparams)
     
     def init_params(self):
-        print "initializing parameters"
         #init parameters matrix in zero
-        self.params         = nu.zeros((self.cube.shape[0], self.cube.shape[1], self.maxatoms, 4), nu.float32)
+        self.params         = np.zeros((self.cube.shape[0], self.cube.shape[1], self.maxatoms, 4), np.float32)
         #upload
         self.cl_params      = cl.Buffer(self.ctx, self.mf.READ_WRITE | self.mf.COPY_HOST_PTR, hostbuf = self.params)
         #init matrix with number of parameters in zero
-        self.nparams        = nu.zeros((self.cube.shape[0], self.cube.shape[1]), nu.int32)
+        self.nparams        = np.zeros((self.cube.shape[0], self.cube.shape[1]), np.int32)
         self.cl_nparams     = cl.Buffer(self.ctx, self.mf.READ_WRITE | self.mf.COPY_HOST_PTR, hostbuf = self.nparams)
         #init matrix with number of parameters in zero
         self.init_errparams()
@@ -168,7 +165,7 @@ class gpu_pursuit(gpu_base):
         self.algorithm  = 1
         self.iterations = iterations
         self.minvalids  = minvalids
-        self.objective_residuals = self.cube.shape[2] * nu.log(objective_residuals/self.cube.shape[2])
+        self.objective_residuals = self.cube.shape[2] * np.log(objective_residuals/self.cube.shape[2])
         self.objective_atoms = objective_atoms
         self.calculate_error_params = calculate_error_params
         self.return_residuals = return_residuals
@@ -190,7 +187,7 @@ class gpu_pursuit(gpu_base):
         self.algorithm  = 2
         self.iterations = 0
         self.minvalids  = minvalids
-        self.objective_residuals = self.cube.shape[2] * nu.log(objective_residuals/self.cube.shape[2])
+        self.objective_residuals = self.cube.shape[2] * np.log(objective_residuals/self.cube.shape[2])
         self.objective_atoms = objective_atoms
         self.calculate_error_params = calculate_error_params
         self.return_residuals = return_residuals
@@ -213,7 +210,7 @@ class gpu_pursuit(gpu_base):
         self.algorithm  = 3
         self.iterations = 0
         self.minvalids  = minvalids
-        self.objective_residuals = self.cube.shape[2] * nu.log(objective_residuals/self.cube.shape[2])
+        self.objective_residuals = self.cube.shape[2] * np.log(objective_residuals/self.cube.shape[2])
         self.objective_atoms = objective_atoms
         self.calculate_error_params = calculate_error_params
         self.return_residuals = return_residuals
@@ -236,7 +233,7 @@ class gpu_pursuit(gpu_base):
         self.algorithm  = 4
         self.iterations = 0
         self.minvalids  = minvalids
-        self.objective_residuals = self.cube.shape[2] * nu.log(objective_residuals/self.cube.shape[2])
+        self.objective_residuals = self.cube.shape[2] * np.log(objective_residuals/self.cube.shape[2])
         self.objective_atoms = objective_atoms
         self.calculate_error_params = calculate_error_params
         self.return_residuals = return_residuals
@@ -257,12 +254,12 @@ class gpu_pursuit(gpu_base):
             self.cl_params,
             self.cl_errparams,
             self.cl_nparams,
-            nu.uint64(100),
-            nu.int32(self.iterations),
-            nu.int32(self.center),
-            nu.int32(self.minvalids),
-            nu.float32(self.objective_residuals),
-            nu.int32(self.objective_atoms),
-            nu.int32(self.algorithm),
-            nu.int32(self.return_residuals))
+            np.uint64(np.random.randint(0, np.iinfo(np.int64).max)),
+            np.int32(self.iterations),
+            np.int32(self.center),
+            np.int32(self.minvalids),
+            np.float32(self.objective_residuals),
+            np.int32(self.objective_atoms),
+            np.int32(self.algorithm),
+            np.int32(self.return_residuals))
 
