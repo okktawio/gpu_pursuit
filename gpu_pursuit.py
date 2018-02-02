@@ -14,9 +14,9 @@ class gpu_base:
                      missingvalue = -9999.9,
                      maxatoms = 20,
                      alpha = 1e-6,
-                     tolerance = 1e-10,
-                     gradient_tolerance = 1e-9,
-                     bfgs_iterations = 40):
+                     tolerance = 1e-6,
+                     gradient_tolerance = 1e-6,
+                     bfgs_iterations = 20):
         """
         Initialize the class, compile the opencl code, upload data, and initialize the params
         """
