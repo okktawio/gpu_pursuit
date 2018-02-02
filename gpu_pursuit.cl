@@ -48,7 +48,7 @@ float local_sum_f(local float vector_data[], uint len)
 	    vector_data[i] += vector_data[i + max2];
 	  barrier(CLK_LOCAL_MEM_FENCE);
 	}
-    }
+   }
   barrier(CLK_LOCAL_MEM_FENCE);
   return vector_data[0];
 }
@@ -467,14 +467,14 @@ float8 bfgs_p(local float time[], local float data[], float4 atom, int n)
   float2 inner = gabor_inner(time, data, atom.x, atom.y, atom.z);
   atom.w = inner.x / inner.y;
   //init old atom with some extreme value
-  float4 atom_old;
+  float4 atom_old = atom + (float4) 1e9;
   //init the Hessian matrix
   float16 Hessian = eye16();
   //bfgs iterations
   uint   bfgs_i = 0;
   float4 gradient = derivative_atom(time, data, atom);
   
-  do
+  while((norm4(gradient) > _gtol_) && (norm4(atom - atom_old) > _tol_) && (bfgs_i < _iiter_))	
     {
       atom_old = atom;
       ++bfgs_i;
@@ -507,7 +507,6 @@ float8 bfgs_p(local float time[], local float data[], float4 atom, int n)
 	}
       else break;
     }
-  while((norm4(gradient) > _gtol_) && (norm4(atom - atom_old) > _tol_) && (bfgs_i < _iiter_));
   //
   //  returns the fitted atom (first 4 elements),
   //  and the square root of the inverse of the diagonal of the Hessian matrix
