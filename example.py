@@ -6,12 +6,13 @@ if __name__ == "__main__":
     np.set_printoptions(suppress = "True")
 
     #space time modis ndvi cube
-    cube   = np.load("pilca_cube.array")
+    data = np.load("pilca.npz")
+    cube = data["cube"]
     #time release of each modis ndvi image
-    time = np.load("pilca_time.array")[:cube.shape[2]]
+    time = cube = data["time"]
     time = time.astype(np.float32) / 365.25
     #date of each pixel datum
-    days   = np.load("pilca_DAY.array")
+    days   = cube = data["DAY"]
     #transform to a float32 array
     cube = cube.astype(np.float32) / 10000.
     cube = np.float32(cube * (cube > 0) - 99999 * (cube <= 0))
