@@ -1,0 +1,27 @@
+{
+    "description": "Performs 1d matching and basis pursuit in time series of remote sensed data using on GPU via Opencl.", 
+    "license": "other-open", 
+    "title": "okktawio/gpu_pursuit v0.2-alpha", 
+    "version": "v0.2-alpha", 
+    "upload_type": "software", 
+    "publication_date": "2018-06-05", 
+    "creators": [
+        {
+            "name": "Octavio Bruzzone",
+            "name": "Marcos Easdale"
+        }
+    ], 
+    "access_right": "open", 
+    "related_identifiers": [
+        {
+            "scheme": "url", 
+            "identifier": "https://github.com/okktawio/gpu_pursuit/tree/v0.2-alpha", 
+            "relation": "isSupplementTo"
+        }, 
+        {
+            "scheme": "doi", 
+            "identifier": "10.5281/zenodo.1173182", 
+            "relation": "isVersionOf"
+        }
+    ]
+}
