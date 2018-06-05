@@ -405,7 +405,6 @@ float4 stdparams(local float time[], local float data[], float4 atom, int n)
   std.w = dif_like_atom(time, data, atom, n, 3);
   return std;
 }
-  
 
 //some macros for the bfgs algorithm
 //number of parameters per atom
@@ -416,6 +415,7 @@ float4 stdparams(local float time[], local float data[], float4 atom, int n)
 #define _tol_   __tol__
 #define _gtol_  __gtol__
 #define _alpha_ __alpha__
+
 
 inline float parabolic_min(float x0, float y0, float x1, float y1, float x2, float y2)
 {
@@ -597,7 +597,17 @@ float4 basis_pursuit_incrowd(local float * time,
       utility -= isnan(atom_sdd.s4) * 10 + isnan(atom_sdd.s5) * 10 + isnan(atom_sdd.s6) * 10 + isnan(atom_sdd.s7) * 10;
       utility -= isinf(atom_sdd.s4) * 10 + isinf(atom_sdd.s5) * 10 + isinf(atom_sdd.s6) * 10 + isinf(atom_sdd.s7) * 10;
       //penalizes too much variability in parameters estimation
-      utility -= 100 * (atom_sdd.s4 >= 1.) + 100 * (atom_sdd.s5 >= 1.) + 100 * (atom_sdd.s6 >= 1.) + 100 * (atom_sdd.s7 >= 0.1);
+      //utility -= 100 * (atom_sdd.s4 >= 2.) + 100 * (atom_sdd.s5 >= 1.) + 100 * (atom_sdd.s6 >= 1.) + 100 * (atom_sdd.s7 >= 0.1);
+      //barrier(CLK_LOCAL_MEM_FENCE);
+
+      //penalizes too much variability in time localization
+      utility -= 10  * (atom_sdd.s4 >=10.0);
+      //penalizes too much variability in atom width
+      utility -= 10  * (atom_sdd.s5 >=10.0);
+      //penalizes too much variability in frequency estimation
+      utility -= 10  * (atom_sdd.s6 >=1.0);
+      //penalizes too much variability in amplitude estimation
+      utility -= 100 * (atom_sdd.s7 >=1.0);
       barrier(CLK_LOCAL_MEM_FENCE);
       
       //put results into the  vector of utilities
